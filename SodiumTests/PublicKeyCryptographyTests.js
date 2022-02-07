@@ -95,9 +95,13 @@ export default class Test extends BasicTest {
       0xe3,0x55,0xa5]))
 
       Sodium.crypto_box_easy(m,nonce,bobpk,alicesk).then((cc) => {
+        console.log("cc: ",cc);
+        console.log("nonce: ",nonce);
         this.testPassed('crypto_box_easy_2')
         Sodium.crypto_box_open_easy(cc,nonce,alicepk,bobsk)
-          .then((mm) => this.testPassed('crypto_box_open_easy_2',c === cc && m === mm))
+          .then((mm) => {
+            console.log("m4 ",mm);
+            this.testPassed('crypto_box_open_easy_2',c === cc && m === mm)})
           .catch((error) =>  this.testFailed('crypto_box_open_easy_2',error))
       }).catch((error) => this.testFailed('crypto_box_easy_2',error))
 
@@ -124,12 +128,13 @@ export default class Test extends BasicTest {
   _testSealBox()
   {
     Sodium.randombytes_uniform(1000).then(m_len =>
-      Promise.all([Sodium.crypto_box_keypair(),Sodium.randombytes_buf(m_len)]).then(([{pk,sk},m]) => {
+      {console.log("mmm ", m_len);
+        Promise.all([Sodium.crypto_box_keypair(),Sodium.randombytes_buf(m_len)]).then(([{pk,sk},m]) => {
         Sodium.crypto_box_seal(m, pk)
           .then(c => Sodium.crypto_box_seal_open(c, pk, sk)
             .then(mm => this.testPassed('crypto_box_seal',m === mm))
           .catch(e => this.testFailed('crypto_box_seal',e)))
-      })
+      })}
     )
   }
 
